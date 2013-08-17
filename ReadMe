@@ -1,0 +1,26 @@
+
+Developer
+=========
+
+W.M.S Fernando.
+
+
+Title
+=======
+
+MOST: NoSQL Solution for Building Data Warehouses
+
+Abstract
+==========
+
+
+In this project we are basically trying to increase the MOST framework performance. MOST is consisted of historical data storage and data
+preprocessing functionalities. Currently these data storage and data preprocessing is done using “MySQL” database. Practically BMS (Building
+Management Systems) have large amount of data coming from huge number of sensors.  Due to this large chuck of data relational database can't
+process these data in a satisfactory level of performance.  So in this project what we will do is move the large data tables (Relations)
+from MySQL database to a NoSQL database. Data and Datapoint relations contains lot of data. So our target is to move these two relations to
+a NoSQL database. As NoSQL database I have selected Neo4j database. It's a graph database which can handle nearly 34 billion of nodes and 34
+billion of relationships between nodes. After we moved some part of the relational schema to a Neo4j we need to have some kind of handler
+(translator) which will convert the MySQL queries to graph queries and return the results in a format that the current MOST is compatible. 
+By coding this handler we can minimize the changes which we has to do to the current implemented MOST framework. This will save time. Due to
+this handler Neo4j database is transparent to the MOST.  The agile software development process is selected to manage this project.
