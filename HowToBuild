@@ -1,0 +1,12 @@
+
+You will have to link the all the jar files in the /neo4j-community-1.8.2/lib folder.
+
+Then open the project using Eclipse.
+
+Change the path where the database should be created in both DatabaseTest.java and Main.java files.
+
+If you run the project as a java application instead of junit test delete all the files inside the database folder to run the program again. Otherwise it will give an exception.
+
+
+
+

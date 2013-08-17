@@ -1,0 +1,340 @@
+2013-07-16 07:28:20.752+0000: WARNING! You are using an unsupported Java runtime. Please use Oracle(R) Java(TM) Runtime Environment 6.
+2013-07-16 07:28:20.876+0000: Creating new db @ /home/milinda/Desktop/MOSTDB/neostore
+2013-07-16 07:28:21.145+0000: [/home/milinda/Desktop/MOSTDB/neostore.nodestore.db] brickCount=0 brickSize=912258b mappedMem=91226112b (storeSize=0b)
+2013-07-16 07:28:21.203+0000: /home/milinda/Desktop/MOSTDB/neostore.nodestore.db hit=1 miss=0 switches=0 ooe=0
+2013-07-16 07:28:22.489+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names] brickCount=0 brickSize=0b mappedMem=0b (storeSize=38b)
+2013-07-16 07:28:22.494+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db] brickCount=0 brickSize=0b mappedMem=0b (storeSize=0b)
+2013-07-16 07:28:22.572+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:22.700+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:22.833+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names] brickCount=0 brickSize=0b mappedMem=0b (storeSize=38b)
+2013-07-16 07:28:22.834+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db] brickCount=0 brickSize=0b mappedMem=0b (storeSize=0b)
+2013-07-16 07:28:22.835+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.strings] brickCount=0 brickSize=280960b mappedMem=281018368b (storeSize=128b)
+2013-07-16 07:28:22.836+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index.keys] brickCount=0 brickSize=1026b mappedMem=1048576b (storeSize=38b)
+2013-07-16 07:28:22.839+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index] brickCount=0 brickSize=10485b mappedMem=1048576b (storeSize=0b)
+2013-07-16 07:28:22.840+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.arrays] brickCount=0 brickSize=317696b mappedMem=317718528b (storeSize=128b)
+2013-07-16 07:28:22.845+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db] brickCount=0 brickSize=3303001b mappedMem=330301440b (storeSize=0b)
+2013-07-16 07:28:22.849+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshipstore.db] brickCount=0 brickSize=4047483b mappedMem=404750336b (storeSize=0b)
+2013-07-16 07:28:22.849+0000: [/home/milinda/Desktop/MOSTDB/neostore.nodestore.db] brickCount=0 brickSize=91224b mappedMem=91226112b (storeSize=9b)
+2013-07-16 07:28:22.850+0000: [/home/milinda/Desktop/MOSTDB/neostore] brickCount=0 brickSize=0b mappedMem=0b (storeSize=0b)
+2013-07-16 07:28:22.922+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.050+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.205+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.strings hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.338+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index.keys hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.445+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.581+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.arrays hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.706+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.834+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshipstore.db hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:23.975+0000: /home/milinda/Desktop/MOSTDB/neostore.nodestore.db hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:24.157+0000: /home/milinda/Desktop/MOSTDB/neostore hit=0 miss=8 switches=0 ooe=0
+2013-07-16 07:28:24.280+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names] brickCount=0 brickSize=0b mappedMem=0b (storeSize=38b)
+2013-07-16 07:28:24.281+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db] brickCount=0 brickSize=0b mappedMem=0b (storeSize=0b)
+2013-07-16 07:28:24.282+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.strings] brickCount=0 brickSize=280960b mappedMem=281018368b (storeSize=128b)
+2013-07-16 07:28:24.282+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index.keys] brickCount=0 brickSize=1026b mappedMem=1048576b (storeSize=38b)
+2013-07-16 07:28:24.283+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index] brickCount=0 brickSize=10485b mappedMem=1048576b (storeSize=0b)
+2013-07-16 07:28:24.283+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db.arrays] brickCount=0 brickSize=317696b mappedMem=317718528b (storeSize=128b)
+2013-07-16 07:28:24.284+0000: [/home/milinda/Desktop/MOSTDB/neostore.propertystore.db] brickCount=0 brickSize=3303001b mappedMem=330301440b (storeSize=0b)
+2013-07-16 07:28:24.284+0000: [/home/milinda/Desktop/MOSTDB/neostore.relationshipstore.db] brickCount=0 brickSize=4047483b mappedMem=404750336b (storeSize=0b)
+2013-07-16 07:28:24.285+0000: [/home/milinda/Desktop/MOSTDB/neostore.nodestore.db] brickCount=0 brickSize=91224b mappedMem=91226112b (storeSize=9b)
+2013-07-16 07:28:24.285+0000: [/home/milinda/Desktop/MOSTDB/neostore] brickCount=0 brickSize=0b mappedMem=0b (storeSize=54b)
+2013-07-16 07:28:24.304+0000: Opened logical log [/home/milinda/Desktop/MOSTDB/nioneo_logical.log.1] version=0, lastTxId=1 (clean)
+2013-07-16 07:28:24.387+0000: TM new log: tm_tx_log.1
+2013-07-16 07:28:24.503+0000: Opened logical log [/home/milinda/Desktop/MOSTDB/index/lucene.log.1] version=0, lastTxId=1 (clean)
+2013-07-16 07:28:24.567+0000: --- STARTUP diagnostics START ---
+2013-07-16 07:28:24.571+0000: Neo4j Kernel properties:
+    forced_kernel_id=
+    read_only=false
+    neo4j.ext.udc.host=udc.neo4j.org
+    logical_log=nioneo_logical.log
+    node_auto_indexing=false
+    intercept_committing_transactions=false
+    remote_shell_name=shell
+    cache_type=soft
+    intercept_deserialized_transactions=false
+    lucene_searcher_cache_size=2147483647
+    neo4j.ext.udc.interval=86400000
+    use_memory_mapped_buffers=true
+    rebuild_idgenerators_fast=true
+    neostore.propertystore.db.index.keys.mapped_memory=1M
+    neostore.propertystore.db.arrays.mapped_memory=303M
+    neostore.propertystore.db.strings.mapped_memory=268M
+    log_mapped_memory_stats_filename=mapped_memory_stats.log
+    log_mapped_memory_stats_interval=1000000
+    gcr_cache_min_log_interval=60s
+    relationship_grab_size=100
+    relationship_auto_indexing=false
+    remote_shell_read_only=false
+    node_cache_array_fraction=1.0
+    allow_store_upgrade=false
+    execution_guard_enabled=false
+    relationship_cache_array_fraction=1.0
+    store_dir=/home/milinda/Desktop/MOSTDB
+    remote_logging_host=127.0.0.1
+    online_backup_enabled=false
+    remote_logging_port=4560
+    gc_monitor_threshold=200ms
+    array_block_size=120
+    load_kernel_extensions=true
+    neostore.relationshipstore.db.mapped_memory=386M
+    keep_logical_logs=true
+    dump_configuration=false
+    gc_monitor_wait_time=100ms
+    neostore.nodestore.db.mapped_memory=87M
+    neo4j.ext.udc.first_delay=600000
+    remote_shell_enabled=false
+    neo4j.ext.udc.reg=unreg
+    remote_shell_port=1337
+    ephemeral=false
+    log_mapped_memory_stats=false
+    neo_store=neostore
+    mapped_memory_page_size=1M
+    query_cache_size=100
+    logging.threshold_for_rotation=104857600
+    neostore.propertystore.db.index.mapped_memory=1M
+    backup_slave=false
+    neostore.propertystore.db.mapped_memory=315M
+    string_block_size=120
+    grab_file_lock=true
+    remote_logging_enabled=false
+    neo4j.ext.udc.enabled=true
+    all_stores_total_mapped_memory_size=500M
+    online_backup_port=6362
+2013-07-16 07:28:24.576+0000: Diagnostics providers:
+    org.neo4j.kernel.configuration.Config
+    org.neo4j.kernel.info.DiagnosticsManager
+    SYSTEM_MEMORY
+    JAVA_MEMORY
+    OPERATING_SYSTEM
+    JAVA_VIRTUAL_MACHINE
+    CLASSPATH
+    LIBRARY_PATH
+    SYSTEM_PROPERTIES
+    LINUX_SCHEDULERS
+    NETWORK
+2013-07-16 07:28:24.577+0000: System memory information:
+    Total Physical memory: 3.80 GB
+    Free Physical memory: 1.12 GB
+    Committed virtual memory: 1.21 GB
+    Total swap space: 256.00 MB
+    Free swap space: 256.00 MB
+2013-07-16 07:28:24.585+0000: JVM memory information:
+    Free  memory: 53.36 MB
+    Total memory: 58.38 MB
+    Max   memory: 865.81 MB
+    Garbage Collector: PS Scavenge: [PS Eden Space, PS Survivor Space]
+    Garbage Collector: PS MarkSweep: [PS Eden Space, PS Survivor Space, PS Old Gen, PS Perm Gen]
+    Memory Pool: Code Cache (Non-heap memory): committed=2.25 MB, used=357.75 kB, max=48.00 MB, threshold=0.00 B
+    Memory Pool: PS Eden Space (Heap memory): committed=15.25 MB, used=2.07 MB, max=319.63 MB, threshold=?
+    Memory Pool: PS Survivor Space (Heap memory): committed=2.50 MB, used=2.49 MB, max=2.50 MB, threshold=?
+    Memory Pool: PS Old Gen (Heap memory): committed=40.63 MB, used=467.01 kB, max=649.38 MB, threshold=0.00 B
+    Memory Pool: PS Perm Gen (Non-heap memory): committed=16.00 MB, used=5.16 MB, max=128.00 MB, threshold=0.00 B
+2013-07-16 07:28:24.605+0000: Operating system information:
+    Operating System: Linux; version: 3.2.0-49-generic-pae; arch: i386; cpus: 4
+    Max number of file descriptors: 4096
+    Number of open file descriptors: 55
+    Process id: 3539@ubuntu
+    Byte order: LITTLE_ENDIAN
+    Local timezone: Asia/Colombo
+2013-07-16 07:28:24.627+0000: JVM information:
+    VM Name: OpenJDK Server VM
+    VM Vendor: Oracle Corporation
+    VM Version: 23.7-b01
+    JIT compiler: HotSpot Tiered Compilers
+    VM Arguments: [-Dfile.encoding=UTF-8]
+2013-07-16 07:28:24.628+0000: Java classpath:
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/plugin.jar
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/sunpkcs11.jar
+     [classpath + loader.0] file:/host/Milinda/Software_Setups/javaLiblaries/junit-4.10.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/classes
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-kernel-1.8.2.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-lucene-index-1.8.2.jar
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/localedata.jar
+     [classpath + loader.0] file:/home/milinda/workspace/MOST_Neo4j/bin/
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/dnsns.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/server-api-1.8.2.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/jsse.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/netx.jar
+     [loader.1] file:/usr/share/java/java-atk-wrapper.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/jce.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-shell-1.8.2.jar
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/sunjce_provider.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/geronimo-jta_1.1_spec-1.1.1.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/rt.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/rhino.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/jfr.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/org.apache.servicemix.bundles.jline-0.9.94_1.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/concurrentlinkedhashmap-lru-1.3.1.jar
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/pulse-java.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/lucene-core-3.5.0.jar
+     [loader.1] file:/usr/lib/i386-linux-gnu/jni/libatk-wrapper.so.0.0.18
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/charsets.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-cypher-1.8.2.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-udc-1.8.2.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-jmx-1.8.2.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-graph-algo-1.8.2.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-i386/jre/lib/sunrsasign.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/scala-library-2.9.1-1.jar
+     [bootstrap] /usr/lib/jvm/java-7-openjdk-common/jre/lib/resources.jar
+     [classpath + loader.0] file:/home/milinda/neo4j-community-1.8.2/lib/neo4j-graph-matching-1.8.2.jar
+     [loader.1] file:/usr/lib/jvm/java-7-openjdk-common/jre/lib/ext/zipfs.jar
+2013-07-16 07:28:24.632+0000: Library path:
+    /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386/server
+    /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386
+    /usr/lib/jvm/java-7-openjdk-i386/lib/i386
+    /usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386/client
+    /usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386
+    /home/milinda/workspace/MOST_Neo4j
+    /usr/java/packages/lib/i386
+    /usr/lib/jni
+    /lib
+    /usr/lib
+2013-07-16 07:28:24.633+0000: System.properties:
+    sun.boot.library.path = /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386
+    path.separator = :
+    file.encoding.pkg = sun.io
+    user.country = US
+    sun.java.launcher = SUN_STANDARD
+    sun.os.patch.level = unknown
+    user.dir = /home/milinda/workspace/MOST_Neo4j
+    sun.jnu.encoding = UTF-8
+    sun.management.compiler = HotSpot Tiered Compilers
+    user.home = /home/milinda
+    user.timezone = Asia/Colombo
+    file.encoding = UTF-8
+    user.name = milinda
+    sun.java.command = MOST_Graph_DB.Main
+    sun.arch.data.model = 32
+    user.language = en
+    awt.toolkit = sun.awt.X11.XToolkit
+    file.separator = /
+    sun.io.unicode.encoding = UnicodeLittle
+    sun.cpu.endian = little
+    sun.desktop = gnome
+    sun.cpu.isalist = 
+2013-07-16 07:28:24.634+0000: Linux scheduler information:
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    none
+    noop deadline [cfq] 
+    noop deadline [cfq] 
+    noop deadline [cfq] 
+    noop deadline [cfq] 
+    noop deadline [cfq] 
+2013-07-16 07:28:24.639+0000: Network information:
+    Interface ppp0:
+        address: 10.111.118.253
+    Interface lo:
+        address: 0:0:0:0:0:0:0:1%1
+        address: 127.0.0.1
+2013-07-16 07:28:24.641+0000: --- STARTUP diagnostics END ---
+2013-07-16 07:28:24.646+0000: Recovery completed, all transactions have been resolved to a consistent state.
+2013-07-16 07:28:24.779+0000: Extension org.neo4j.kernel.KernelExtension[kernel jmx] loaded ok
+2013-07-16 07:28:24.784+0000: Extension org.neo4j.kernel.KernelExtension[kernel udc] loaded ok
+2013-07-16 07:28:24.786+0000: Extension org.neo4j.kernel.KernelExtension[shell] loaded ok
+2013-07-16 07:28:24.789+0000: --- STARTUP diagnostics for KernelDiagnostics:Versions START ---
+2013-07-16 07:28:24.789+0000: Graph Database: org.neo4j.kernel.EmbeddedGraphDatabase StoreId[time:1373959700877, id:1595500924481028822, store version: 13561656364791302]
+2013-07-16 07:28:24.789+0000: Kernel version: Neo4j - Graph Database Kernel 1.8.2
+2013-07-16 07:28:24.789+0000: Neo4j component versions:
+2013-07-16 07:28:24.790+0000:   Neo4j - Graph Database Kernel 1.8.2
+2013-07-16 07:28:24.790+0000: --- STARTUP diagnostics for KernelDiagnostics:Versions END ---
+2013-07-16 07:28:24.793+0000: --- STARTUP diagnostics for NEO_STORE_VERSIONS START ---
+2013-07-16 07:28:24.794+0000: Store versions:
+    Store versions:
+      NeoStore v0.A.0
+      NodeStore v0.A.0
+      RelationshipStore v0.A.0
+      RelationshipTypeStore v0.A.0
+      PropertyStore v0.A.0
+      PropertyIndexStore v0.A.0
+      StringPropertyStore v0.A.0
+      ArrayPropertyStore v0.A.0
+2013-07-16 07:28:24.794+0000: --- STARTUP diagnostics for NEO_STORE_VERSIONS END ---
+2013-07-16 07:28:24.794+0000: --- STARTUP diagnostics for NEO_STORE_ID_USAGE START ---
+2013-07-16 07:28:24.794+0000: Id usage:
+    Id usage:
+      NodeStore: used=1 high=0
+      RelationshipStore: used=0 high=-1
+      RelationshipTypeStore: used=0 high=-1
+      PropertyStore: used=0 high=-1
+      PropertyIndexStore: used=0 high=-1
+      StringPropertyStore: used=1 high=0
+      ArrayPropertyStore: used=1 high=0
+2013-07-16 07:28:24.795+0000: --- STARTUP diagnostics for NEO_STORE_ID_USAGE END ---
+2013-07-16 07:28:24.795+0000: --- STARTUP diagnostics for PERSISTENCE_WINDOW_POOL_STATS START ---
+2013-07-16 07:28:24.795+0000: --- STARTUP diagnostics for PERSISTENCE_WINDOW_POOL_STATS END ---
+2013-07-16 07:28:24.796+0000: --- STARTUP diagnostics for KernelDiagnostics:StoreFiles START ---
+2013-07-16 07:28:24.796+0000: Disk space on partition (Total / Free / Free %): 25538187264 / 19562024960 / 23
+Storage files: (filename : modification date - size)
+      neostore.propertystore.db: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.relationshiptypestore.db.names.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      lock: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.relationshiptypestore.db: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.propertystore.db.arrays.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      messages.log: 2013-07-16T12:58:24+0530 - 15.96 kB
+      neostore.propertystore.db.strings.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      neostore.relationshiptypestore.db.names: 2013-07-16T12:58:24+0530 - 38.00 B
+      neostore.propertystore.db.strings: 2013-07-16T12:58:24+0530 - 128.00 B
+      nioneo_logical.log.1: 2013-07-16T12:58:24+0530 - 16.00 B
+      store_lock: 2013-07-16T12:58:20+0530 - 0.00 B
+      neostore.relationshipstore.db: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.propertystore.db.arrays: 2013-07-16T12:58:24+0530 - 128.00 B
+      neostore.propertystore.db.index.keys: 2013-07-16T12:58:24+0530 - 38.00 B
+      neostore: 2013-07-16T12:58:24+0530 - 54.00 B
+      neostore.nodestore.db.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      neostore.propertystore.db.index: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.propertystore.db.index.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      tm_tx_log.1: 2013-07-16T12:58:24+0530 - 0.00 B
+      neostore.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      neostore.nodestore.db: 2013-07-16T12:58:24+0530 - 9.00 B
+      neostore.propertystore.db.index.keys.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      neostore.relationshiptypestore.db.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      nioneo_logical.log.active: 2013-07-16T12:58:24+0530 - 4.00 B
+      neostore.propertystore.db.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      active_tx_log: 2013-07-16T12:58:24+0530 - 11.00 B
+      neostore.relationshipstore.db.id: 2013-07-16T12:58:24+0530 - 9.00 B
+      index:
+        lucene.log.active: 2013-07-16T12:58:24+0530 - 4.00 B
+        lucene-store.db: 2013-07-16T12:58:24+0530 - 40.00 B
+        lucene.log.1: 2013-07-16T12:58:24+0530 - 16.00 B
+      - Total: 2013-07-16T12:58:24+0530 - 60.00 B
+2013-07-16 07:28:24.804+0000: --- STARTUP diagnostics for KernelDiagnostics:StoreFiles END ---
+2013-07-16 07:28:24.806+0000: Started - database is now available
+2013-07-16 07:28:24.806+0000: GC Monitor started. 
+2013-07-16 07:28:25.442+0000: Stopping - database is now unavailable
+2013-07-16 07:28:25.505+0000: TM shutting down
+2013-07-16 07:28:25.507+0000: GC Monitor stopped. 
+2013-07-16 07:28:25.585+0000: Closed log /home/milinda/Desktop/MOSTDB/index/lucene.log
+2013-07-16 07:28:26.064+0000: Closed log /home/milinda/Desktop/MOSTDB/nioneo_logical.log
+2013-07-16 07:28:26.065+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db.names hit=0 miss=3 switches=0 ooe=0
+2013-07-16 07:28:26.184+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshiptypestore.db hit=0 miss=3 switches=0 ooe=0
+2013-07-16 07:28:26.307+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.strings hit=1 miss=0 switches=0 ooe=0
+2013-07-16 07:28:26.407+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index.keys hit=30 miss=0 switches=0 ooe=0
+2013-07-16 07:28:26.508+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.index hit=30 miss=0 switches=0 ooe=0
+2013-07-16 07:28:26.617+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db.arrays hit=0 miss=0 switches=0 ooe=0
+2013-07-16 07:28:26.730+0000: /home/milinda/Desktop/MOSTDB/neostore.propertystore.db hit=34 miss=0 switches=0 ooe=0
+2013-07-16 07:28:26.886+0000: /home/milinda/Desktop/MOSTDB/neostore.relationshipstore.db hit=17 miss=0 switches=0 ooe=0
+2013-07-16 07:28:27.031+0000: /home/milinda/Desktop/MOSTDB/neostore.nodestore.db hit=18 miss=0 switches=0 ooe=0
+2013-07-16 07:28:27.183+0000: /home/milinda/Desktop/MOSTDB/neostore hit=0 miss=24 switches=0 ooe=0
+2013-07-16 07:28:27.308+0000: NeoStore closed
+2013-07-16 07:28:27.309+0000: --- SHUTDOWN diagnostics START ---
+2013-07-16 07:28:27.309+0000: --- SHUTDOWN diagnostics END ---
