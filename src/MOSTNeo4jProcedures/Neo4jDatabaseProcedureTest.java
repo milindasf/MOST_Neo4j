@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.io.Console;
 import java.io.File;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.After;
@@ -70,15 +71,15 @@ public class Neo4jDatabaseProcedureTest {
  @Test
 	public void testAddDatapoint(){
 		
-		boolean state=db.addDatapoint("datapoint_1", "Test datapoint", "Celsius",
+		boolean state=db.addDatapoint("datapoint_1", "Test datapoint", "boolean",
 				0.001, -30.00, 55.230, 323.32, 10.00, 5.00, 12.0, "+ -",
 				"virtual", "hello", "Test datapoint");
 		assertEquals(true, state);
-		state=db.addDatapoint("datapoint_1", "Test datapoint", "Celsius",
+		state=db.addDatapoint("datapoint_1", "Test datapoint", "boolean",
 				0.001, -30.00, 55.230, 323.32, 10.00, 5.00, 12.0, "+ -",
 				"virtual", "hello", "Test datapoint");
 		assertEquals(false, state);
-		state=db.addDatapoint("datapoint_2", "Test datapoint", "Celsius",
+		state=db.addDatapoint("datapoint_2", "Test datapoint", "analog",
 				0.001, -30.00, 55.230, 323.32, 10.00, 5.00, 12.0, "+ -",
 				"virtual", "hello", "Test datapoint");
 		assertEquals(true, state);
@@ -114,7 +115,7 @@ public class Neo4jDatabaseProcedureTest {
 		
 		this.testAddZone();
 		this.testAddDatapoint();
-		boolean state=db.addDataForced("datapoint_1", "23-07-2013 12:23:45", 25.78);
+		boolean state=db.addDataForced("datapoint_1", "2013-07-23 12:23:45.00", 25.78);
 		assertEquals(true, state);
 		
 	}
@@ -124,7 +125,120 @@ public class Neo4jDatabaseProcedureTest {
 		this.testAddDatapoint();
 	    System.out.println(new Timestamp(new Date().getTime()).toString());
 		boolean state=db.addData("datapoint_1",new Timestamp(new Date().getTime()).toString(), 26.34);
-		assertEquals(true, state);
+		assertEquals(false, state); // Violates the Dead band Constraint.
+	}
+	
+	@Test
+	public void testGetValues(){
+		
+		this.testAddDataForced();
+		Node[] data=db.getValues("datapoint_1","2013-06-23 12:23:34.43",null);
+		for(int i=0;i<data.length;i++){
+			System.out.println("data_"+i+":"+data[i].getProperty("value"));
+			
+		}
+		assertEquals(1, data.length);
+		data=db.getValues("datapoint_1", null, "2013-08-23 12:23:34.34");
+		for(int i=0;i<data.length;i++){
+			System.out.println("data_"+i+":"+data[i].getProperty("value"));
+			
+		}
+		assertEquals(1, data.length);
+		data=db.getValues("datapoint_1", "2013-06-23 12:23:34.43", "2013-08-23 12:23:34.34");
+		for(int i=0;i<data.length;i++){
+			System.out.println("data_"+i+":"+data[i].getProperty("value"));
+			
+		}
+		data=db.getValues("datapoint_1",null,null);
+		for(int i=0;i<data.length;i++){
+			System.out.println("data_"+i+":"+data[i].getProperty("value"));
+			
+		}
+		
+		
+		
+	}
+	
+	@Test
+	public void testGetNumberOfValues(){
+		
+		this.testAddDataForced();
+		Node [] data=db.getValues("datapoint_1", "2013-06-23 12:23:34.43", "2013-08-23 12:23:34.34");
+		assertEquals(2, data.length);
+		
+	}
+	@Test
+	public void testGetValuesPeriodicallyBinary(){
+		
+		this.testAddDatapoint();
+		boolean state;
+		//ADDING DATA FOR DATAPOINT_1
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:13:34.23", 23.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:14:34.23", 22.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:15:34.23", 21.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:16:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:17:34.23", 24.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:12:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		
+        // ADDING DATA FOR DATAPOINT_2
+
+		//ADDING DATA FOR DATAPOINT_1
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:13:34.23", 23.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:14:34.23", 22.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:15:34.23", 21.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:16:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:17:34.23", 24.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:12:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+
+		System.out.println("For Mode _1");
+		ArrayList<data_periodic> temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 1);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(""+temp.toString());
+			
+		}
+		
+		System.out.println("For Mode _2");
+		temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 2);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(""+temp.toString());
+			
+		}
+		System.out.println("For Mode _3");
+		temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 3);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(""+temp.toString());
+			
+		}
+		
+		System.out.println("For Mode _1001");
+		temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 1001);
+		assertEquals(null, temp);
+		System.out.println("For Mode _1002");
+		temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 1002);
+		assertEquals(null, temp);
+		System.out.println("For Mode _1003");
+		temp= db.getValuesPerodicBinary("datapoint_1", "2013-07-23 12:12:12.12","2013-07-23 12:15:32.12",1000.0, 1003);
+		assertEquals(null, temp);
+		
+		
+		
+		
+		
 	}
 	
 	
