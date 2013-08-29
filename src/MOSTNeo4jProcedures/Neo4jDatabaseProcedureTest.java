@@ -290,9 +290,80 @@ public class Neo4jDatabaseProcedureTest {
 			
 		}
 		
+
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 2);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}
+
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 3);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}
+
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 1001);
+		assertEquals(null, temp);
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 1002);
+		assertEquals(null, temp);
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 1003);
+		assertEquals(null, temp);
+		
+		
 		
 		
 	}
+	
+	
+	@Test
+	public void testGetValuesPeriodic(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_periodic> temp;
+		System.out.println("p_mode:1");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 1);
+		
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}
+		System.out.println("p_mode:2");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 2);
+		
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}System.out.println("p_mode:3");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 3);
+		
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}
+		
+		System.out.println("p_mode:1001");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 1001);
+		assertEquals(null, temp);
+	
+		System.out.println("p_mode:1002");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 1002);
+		assertEquals(null, temp);
+	
+		System.out.println("p_mode:1003");
+		temp=db.getValuesPeriodic("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:54.23", 1000.0, 1003);
+		assertEquals(null, temp);
+	
+	
+	
+	}
+	
 	
 	
 	private void addTestDatatoDataPoints(){

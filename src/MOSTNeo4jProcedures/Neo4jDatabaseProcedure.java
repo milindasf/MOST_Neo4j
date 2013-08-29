@@ -1605,7 +1605,7 @@ public class Neo4jDatabaseProcedure {
 								params.put("lv_endtime_per",
 										lv_endtime_per.toString());
 								params.put("datapoint_name", p_datapoint_name);
-								cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp<=lv_endtime_per AND data.datapoint_name={datapoint_name} RETURN data ORDER BY data.timestamp DESC LIMIT 1;";
+								cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN data ORDER BY data.timestamp DESC LIMIT 1;";
 								result = execute_eng.execute(cypherquerry,
 										params);
 								Iterator<Node> iterator3 = result
@@ -1908,6 +1908,73 @@ public class Neo4jDatabaseProcedure {
 
 	}
 
+	
+	public ArrayList<data_periodic> getValuesPeriodic(String p_datapoint_name,String p_starttime,String p_endtime,Double p_period,Integer p_mode){
+		
+		Timestamp start;
+		Timestamp end;
+		Node datapoint;
+		
+		try{
+			start=Timestamp.valueOf(p_starttime);
+			end=Timestamp.valueOf(p_endtime);
+			
+		}catch(Exception e){
+			System.out.println("Invalid datetime formats...");
+		    return null;
+		}
+		
+		//#check if given dates(time) are allowed
+		if((end.getTime()-start.getTime())<p_period){
+			System.out.println("endtime must be later than starttime + one periode");
+			return null;
+		}else{
+			
+			datapoint=this.getDatapointByName(p_datapoint_name);
+			if(datapoint==null){
+				System.out.println("given datapoint_name does not exist in database(in table datapoint)");
+				return null;
+			}else{
+				
+				if(p_mode==0 || p_mode==null){
+					p_mode=1;
+				}
+				
+			}
+			
+		}
+		
+		data_periodic temp;
+		ArrayList<data_periodic> temp_data_periodic=null;
+		
+		//#input data should be correct, now starting algorithm for choosing appropriate (depending on type, more exactly the unit of the datapoint) stored procedure
+		
+		if(datapoint.getProperty("unit").toString().equals("boolean")){
+			
+			temp_data_periodic=this.getValuesPerodicBinary(p_datapoint_name, p_starttime, p_endtime, p_period, p_mode);
+			
+		}else{
+			temp_data_periodic=this.getValuesPeriodicAnalog(p_datapoint_name, p_starttime, p_endtime, p_period, p_mode);
+			
+			
+		}
+		
+		return temp_data_periodic;
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 // TEMP TABLE FOR data_periodic. USED in getvaluePeriodicBinary Functions
