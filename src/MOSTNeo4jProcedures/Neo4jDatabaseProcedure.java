@@ -26,6 +26,8 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 
+import scala.annotation.target.param;
+
 public class Neo4jDatabaseProcedure {
 
 	private GraphDatabaseFactory graphDbFactory;
@@ -942,12 +944,13 @@ public class Neo4jDatabaseProcedure {
 								cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} and data.timestamp<={lv_endtime_per} and data.datapoint_name={datapoint_name} RETURN COUNT(data) AS count;";
 								result = execute_eng.execute(cypherquerry,
 										params);
-								Iterator<Long> iterator3 = result.columnAs("count");
+								Iterator<Long> iterator3 = result
+										.columnAs("count");
 								// #lv_quality is used for majority decision
 								// algorithm
 
-								lv_quality = Double.parseDouble(iterator3.next()
-										.toString());
+								lv_quality = Double.parseDouble(iterator3
+										.next().toString());
 
 								// #majority decision of values, everything not
 								// 0 is interpreted as TRUE, if half values are
@@ -979,7 +982,8 @@ public class Neo4jDatabaseProcedure {
 								// No Need to Clear the parms....
 
 								cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp<={lv_endtime_per} and data.datapoint_name={datapoint_name} RETURN data ORDER BY data.timestamp DESC LIMIT 1;";
-								result=execute_eng.execute(cypherquerry, params);
+								result = execute_eng.execute(cypherquerry,
+										params);
 								Iterator<Node> iterator2 = result
 										.columnAs("data");
 								lv_lastValidValue = Double
@@ -1058,9 +1062,10 @@ public class Neo4jDatabaseProcedure {
 								cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name}  RETURN COUNT(data) AS count;";
 								result = execute_eng.execute(cypherquerry,
 										params);
-								Iterator<Long>iterator3 = result.columnAs("count");
-								lv_quality = Double
-										.parseDouble(iterator3.next().toString());
+								Iterator<Long> iterator3 = result
+										.columnAs("count");
+								lv_quality = Double.parseDouble(iterator3
+										.next().toString());
 								lv_countPeriod = 1;
 
 							} else {
@@ -1137,9 +1142,10 @@ public class Neo4jDatabaseProcedure {
 								cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN COUNT(data) AS count;";
 								result = execute_eng.execute(cypherquerry,
 										params);
-								Iterator<Long> iterator3 = result.columnAs("count");
-								lv_quality = Double
-										.parseDouble(iterator3.next().toString());
+								Iterator<Long> iterator3 = result
+										.columnAs("count");
+								lv_quality = Double.parseDouble(iterator3
+										.next().toString());
 								lv_countPeriod = 1;
 
 							} else {
@@ -1196,10 +1202,11 @@ public class Neo4jDatabaseProcedure {
 
 	}
 
-	
-	public void getValuesPeriodicAnalog(String p_datapoint_name,String p_starttime,String p_endtime,Double p_period,int p_mode){
-		
-		//Variables
+	public ArrayList<data_periodic> getValuesPeriodicAnalog(
+			String p_datapoint_name, String p_starttime, String p_endtime,
+			Double p_period, int p_mode) {
+
+		// Variables
 		Timestamp lv_firstDate;
 		Double lv_firstValue;
 		Double lv_lastValidValue;
@@ -1208,169 +1215,751 @@ public class Neo4jDatabaseProcedure {
 		Double lv_quality;
 		Timestamp lv_starttime_per;
 		Timestamp lv_endtime_per;
-		Timestamp lv_starttime_interpol;
+		Timestamp lv_starttime_interpol = null;
 		Timestamp lv_lastValidValueTimestamp;
 		Boolean lv_lastperiode_was_valid;
 		Integer lv_countPeriod;
 		Boolean lv_outputEnabled;
-		
+		Double[] calcAvgOutput;
 		Node datapoint;
 		Timestamp start;
-	    Timestamp end;
-	    
-	    data_periodic temp;
-	    ArrayList<data_periodic> temp_data_periodic=new ArrayList<data_periodic>();
-	    
-	    
-	    try{
-	    	start=Timestamp.valueOf(p_starttime);
-	    	end=Timestamp.valueOf(p_endtime);
-	    	
-	    }catch(Exception e){
-	    	System.out.println("Invalid format of the Timestamp Strings");
-	    	return;
-	    }
-		
-		
-		
-		//#initialize local variables if needed
-		lv_outputEnabled=true;
-		//#check if given dates(time) are allowed
-		if((end.getTime()-start.getTime())<p_period){
-			System.out.println("endtime must be later than starttime + one periode");
-			return;
-		}else{
-			 //#check if datapoint_name exists
-			datapoint=this.getDatapointByName(p_datapoint_name);
-			if(datapoint==null){
-				System.out.println("given datapoint_name does not exist in database(in table datapoint)");
-			    return ;
-			}		
-			
-//	        #TODO: instead of the following query also the first SET lv_firstValue=... (some lines beneath this) could be used and cached (because it is needed anywayin most cases). If the returned value is NULL, no values are in the database
+		Timestamp end;
 
-			if(this.getNumberofValues(p_datapoint_name, p_starttime, p_endtime)==0){
-				
-				temp=new data_periodic(null,p_starttime, p_datapoint_name,0.0);
-				temp_data_periodic.add(temp);
-				
-				lv_starttime_per=new Timestamp(start.getTime()+1);
-				lv_endtime_per=new Timestamp(start.getTime()+Math.round(p_period));
-				
-				//#do calculations while endtime for next periode sooner than final endtime
-				
-				while((end.getTime()-lv_endtime_per.getTime())>=0){
-					
-					temp=new data_periodic(null,lv_endtime_per.toString(), p_datapoint_name, 0.0);
-					temp_data_periodic.add(temp);
-					
-					 //#shift to next periode
-			         // #lv_endtime_per+1 because SQL BETWEEN function includes the limits to (closed set)
-					
-					 lv_starttime_per=new Timestamp(lv_endtime_per.getTime()+1);
-					 lv_endtime_per=new Timestamp(lv_endtime_per.getTime()+Math.round(p_period));
-					
-				}
-				
-				
-			}else{
-				
-//				#---------------------------------------------------------------------------------------------
-//	            #-------------------------------- start of main algorithm ------------------------------------
-//	            #---------------------------------------------------------------------------------------------
+		String cypherquerry = "";
+		Map<String, Object> params = new HashMap<String, Object>();
 
-				lv_starttime_per=new Timestamp(start.getTime()+1);
-				lv_endtime_per=new Timestamp(start.getTime()+Math.round(p_period));
-				
-				Node [] data=this.getValues(p_datapoint_name, p_starttime, p_endtime);
-				
-				   //-- get first date in given timeslot of given datapoint_name
-				lv_firstDate=Timestamp.valueOf(data[0].getProperty("timestamp").toString());
-				
-//				  #the first value (the value with the earliest date) is directly interpreted as the value at the starttime (no averageing/interpolation,
-//				            #because averaging/interpolation for a certain timepoint is done with the periode before)
+		try {
+			start = Timestamp.valueOf(p_starttime);
+			end = Timestamp.valueOf(p_endtime);
 
-
-				lv_firstValue=Double.parseDouble(data[0].getProperty("value").toString());
-			
-				//#the values in the table data_periodic are temporary, so the values in this table need to be delted
-				lv_lastValidValue=lv_firstValue;
-				lv_lastperiode_was_valid=true;
-				lv_countPeriod=1;
-				
-				//#set if the generated values shall be returned to calling function (by the SELECT statement at the end of this SP)
-				
-				if(p_mode>1000){
-
-					lv_outputEnabled=false;
-			     	p_mode=p_mode-1000;
-				}
-				//#insert first value in table data_periodic
-				temp=new data_periodic(lv_firstValue, p_starttime, p_datapoint_name, 0.0);
-				temp_data_periodic.add(temp);
-				
-//				#---------------------------------------------------------------------------------------------
-//	            #-------------- mode = 1 (weighted averaging and linear interpolation)------------------------
-//	            #---------------------------------------------------------------------------------------------   
-
-
-				switch(p_mode){
-				
-				case 1:
-					   // #mode 1:
-			           //#algorithm for weighted averaging and linear interpolation of the values
-					   //#do calculations while endtime for next periode sooner than final endtime
-					   while((end.getTime()-lv_endtime_per.getTime())>=0){
-						   if(lv_lastperiode_was_valid){
-							   
-						   }
-						   
-					   } 
-					
-					   break;
-				
-				
-				}
-				
-				
-				
-				
-			}
-			
-			
-			
+		} catch (Exception e) {
+			System.out.println("Invalid format of the Timestamp Strings");
+			return null;
 		}
-		
-		
-		
-		
-		
+
+		// #initialize local variables if needed
+		lv_outputEnabled = true;
+		// #check if given dates(time) are allowed
+		if ((end.getTime() - start.getTime()) < p_period) {
+			System.out
+					.println("endtime must be later than starttime + one periode");
+			return null;
+		} else {
+			// #check if datapoint_name exists
+			datapoint = this.getDatapointByName(p_datapoint_name);
+			if (datapoint == null) {
+				System.out
+						.println("given datapoint_name does not exist in database(in table datapoint)");
+				return null;
+			} else {
+
+				data_periodic temp;
+				ArrayList<data_periodic> temp_data_periodic = new ArrayList<data_periodic>();
+
+				// #TODO: instead of the following query also the first SET
+				// lv_firstValue=... (some lines beneath this) could be used and
+				// cached (because it is needed anywayin most cases). If the
+				// returned value is NULL, no values are in the database
+
+				if (this.getNumberofValues(p_datapoint_name, p_starttime,
+						p_endtime) == 0) {
+
+					temp = new data_periodic(null, p_starttime,
+							p_datapoint_name, 0.0);
+					temp_data_periodic.add(temp);
+
+					lv_starttime_per = new Timestamp(start.getTime() + 1);
+					lv_endtime_per = new Timestamp(start.getTime()
+							+ Math.round(p_period));
+
+					// #do calculations while endtime for next periode sooner
+					// than final endtime
+
+					while ((end.getTime() - lv_endtime_per.getTime()) >= 0) {
+
+						temp = new data_periodic(null,
+								lv_endtime_per.toString(), p_datapoint_name,
+								0.0);
+						temp_data_periodic.add(temp);
+
+						// #shift to next periode
+						// #lv_endtime_per+1 because SQL BETWEEN function
+						// includes the limits to (closed set)
+
+						lv_starttime_per = new Timestamp(
+								lv_endtime_per.getTime() + 1);
+						lv_endtime_per = new Timestamp(lv_endtime_per.getTime()
+								+ Math.round(p_period));
+
+					}
+
+				} else {
+
+					// #---------------------------------------------------------------------------------------------
+					// #-------------------------------- start of main algorithm
+					// ------------------------------------
+					// #---------------------------------------------------------------------------------------------
+
+					lv_starttime_per = new Timestamp(start.getTime() + 1);
+					lv_endtime_per = new Timestamp(start.getTime()
+							+ Math.round(p_period));
+
+					Node[] data = this.getValues(p_datapoint_name, p_starttime,
+							p_endtime);
+
+					// -- get first date in given timeslot of given
+					// datapoint_name
+					lv_firstDate = Timestamp.valueOf(data[0].getProperty(
+							"timestamp").toString());
+
+					// #the first value (the value with the earliest date) is
+					// directly interpreted as the value at the starttime (no
+					// averageing/interpolation,
+					// #because averaging/interpolation for a certain timepoint
+					// is done with the periode before)
+
+					lv_firstValue = Double.parseDouble(data[0].getProperty(
+							"value").toString());
+
+					// #the values in the table data_periodic are temporary, so
+					// the values in this table need to be delted
+					lv_lastValidValue = lv_firstValue;
+					lv_lastperiode_was_valid = true;
+					lv_countPeriod = 1;
+
+					// #set if the generated values shall be returned to calling
+					// function (by the SELECT statement at the end of this SP)
+
+					if (p_mode > 1000) {
+
+						lv_outputEnabled = false;
+						p_mode = p_mode - 1000;
+					}
+					// #insert first value in table data_periodic
+					temp = new data_periodic(lv_firstValue, p_starttime,
+							p_datapoint_name, 0.0);
+					temp_data_periodic.add(temp);
+
+					// #---------------------------------------------------------------------------------------------
+					// #-------------- mode = 1 (weighted averaging and linear
+					// interpolation)------------------------
+					// #---------------------------------------------------------------------------------------------
+
+					switch (p_mode) {
+
+					case 1:
+						// #mode 1:
+						// #algorithm for weighted averaging and linear
+						// interpolation of the values
+						// #do calculations while endtime for next periode
+						// sooner than final endtime
+						while ((end.getTime() - lv_endtime_per.getTime()) >= 0) {
+							if (lv_lastperiode_was_valid) {
+
+								// #check if avg value of periode exists (in
+								// other words, if there are values in this
+								// periode given)
+								// #TODO: test if DISTINCT has an effect, don't
+								// think so (but could be needed to prevent
+								// errors or confounded with LIMIT 1)
+								// #lv_starttime_per+1 done at the end of the
+								// loop. Needed because SQL BETWEEN function
+								// includes the limits to (closed set)
+								params.clear();
+								params.put("node_id", datapoint.getId());
+								params.put("lv_starttime_per",
+										lv_starttime_per.toString());
+								params.put("lv_endtime_per",
+										lv_endtime_per.toString());
+								params.put("datapoint_name", p_datapoint_name);
+								cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN DISTINCT data.datapoint_name AS datapoint_name;";
+								result = execute_eng.execute(cypherquerry,
+										params);
+								Iterator<String> iterator = result
+										.columnAs("datapoint_name");
+								if (iterator.hasNext()) {
+
+									calcAvgOutput = this.calcAverageWeighted(
+											p_datapoint_name,
+											lv_starttime_per.toString(),
+											lv_endtime_per.toString(),
+											lv_lastValidValue);
+									lv_currentValue = calcAvgOutput[0];
+									lv_lastValidValue = calcAvgOutput[1];
+									lv_quality = calcAvgOutput[2];
+									// #calculated average value is assigned to
+									// the endtime of the periode
+									// #quality is equal to the number of values
+									// in current periode (many values -> high
+									// quality)
+									temp = new data_periodic(lv_currentValue,
+											lv_endtime_per.toString(),
+											p_datapoint_name, lv_quality);
+									temp_data_periodic.add(temp);
+								} else {
+
+									lv_lastperiode_was_valid = false;
+									lv_starttime_interpol = new Timestamp(
+											lv_starttime_per.getTime() - 1);
+								}
+
+							} else {
+
+								// #TODO: test if DISTINCT has an effect, don't
+								// think so (but could be needed to prevent
+								// errors or confounded with LIMIT 1)
+								params.clear();
+								params.put("node_id", datapoint.getId());
+								params.put("lv_starttime_per",
+										lv_starttime_per.toString());
+								params.put("lv_endtime_per",
+										lv_endtime_per.toString());
+								params.put("datapoint_name", p_datapoint_name);
+								cypherquerry = "start n=Node({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<{lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN DISTINCT data.datapoint_name AS datapoint;";
+								result = execute_eng.execute(cypherquerry,
+										params);
+								Iterator<String> iterator = result
+										.columnAs("datapoint");
+								if (iterator.hasNext()) {
+									lv_lastperiode_was_valid = true;
+									// -- interpolate algorithm
+									//
+									// -- lv_endtime_per is the timepoint of the
+									// current valid value
+									// -- startvalue for weighted average is
+									// NULL, so there is no and it is ignored by
+									// stored procedure calcAverageWeighted
+
+									// #lv_firstValue because returned value can
+									// not be assigned to lv_lastValidValue
+									// because this is the startvalue needed for
+									// the interpolation
+									// #perhaps it would be better to use normal
+									// averaging in this mode!?
+
+									Double[] output = this.calcAverageWeighted(
+											p_datapoint_name,
+											lv_starttime_per.toString(),
+											lv_endtime_per.toString(), null);
+									lv_currentValue = output[0];
+									lv_firstValue = output[1];
+									lv_quality = output[2];
+
+									this.interpolateValuesLinear(
+											p_datapoint_name,
+											lv_starttime_per.toString(),
+											lv_endtime_per.toString(),
+											p_period, lv_lastValidValue,
+											lv_currentValue, temp_data_periodic);
+
+									lv_lastValidValue = lv_currentValue;
+
+								}
+
+							}
+
+							// #shift to next periode
+							// #lv_endtime_per+1 because SQL BETWEEN function
+							// includes the limits to (closed set)
+							lv_starttime_per = new Timestamp(
+									lv_endtime_per.getTime() + 1);
+							lv_endtime_per = new Timestamp(
+									lv_endtime_per.getTime()
+											+ Math.round(p_period));
+
+						}
+
+						if (lv_lastperiode_was_valid == false) {
+
+							 this.interpolateValuesLinear(p_datapoint_name,
+							 lv_starttime_interpol.toString(),
+							 lv_starttime_per.toString(), p_period,
+							 lv_lastValidValue,
+							 lv_lastValidValue,temp_data_periodic);
+							//System.out
+								//	.println("lv_starttime_interpol is not initialized");
+						}
+						break;
+
+					case 2:
+						// #---------------------------------------------------------------------------------------------
+						// #-------------- mode = 2 (weighted averaging / sample
+						// & hold)---------------------------------
+						// #---------------------------------------------------------------------------------------------
+
+						// #mode 2:
+						// #algorithm for weighted averaging and sample & hold
+						// of values
+
+						while ((end.getTime() - lv_endtime_per.getTime()) >= 0) {
+							// #do calculations while endtime for next periode
+							// sooner than final endtime
+							// #check if there are values in current periode
+							// #lv_starttime_per+1 done at the end of the loop.
+							// Needed because SQL BETWEEN function includes the
+							// limits to (closed set)
+							// #TODO: check if DISTINCT has an effect or LIMIT 1
+							// needed/better!
+							//
+
+							params.clear();
+							params.put("node_id", datapoint.getId());
+							params.put("lv_starttime_per",
+									lv_starttime_per.toString());
+							params.put("lv_endtime_per",
+									lv_endtime_per.toString());
+							params.put("datapoint_name", p_datapoint_name);
+							cypherquerry = "start n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN DISTINCT data.datapoint_name AS datapoint_name;";
+							result = execute_eng.execute(cypherquerry, params);
+							Iterator<String> iterator = result
+									.columnAs("datapoint_name");
+							if (iterator.hasNext()) {
+								// #calculate weighted average value of last
+								// periode
+								Double[] output = this.calcAverageWeighted(
+										p_datapoint_name,
+										lv_starttime_per.toString(),
+										lv_endtime_per.toString(),
+										lv_lastValidValue);
+								lv_currentValue = output[0];
+								lv_lastValidValue = output[1];
+								lv_quality = output[2];
+
+								lv_countPeriod = 1;
+								// #assigning of current value (calculated
+								// result of last period) to the endtime of the
+								// period
+								temp = new data_periodic(lv_currentValue,
+										lv_endtime_per.toString(),
+										p_datapoint_name, lv_quality);
+								temp_data_periodic.add(temp);
+							} else {
+
+								lv_countPeriod = lv_countPeriod + 1;
+								lv_quality = 1.0 / (lv_countPeriod);
+
+								// #assigning of value (the last entry of the
+								// last period that was valid (hold)) to the
+								// endtime of the current period
+								temp = new data_periodic(lv_lastValidValue,
+										lv_endtime_per.toString(),
+										p_datapoint_name, lv_quality);
+								temp_data_periodic.add(temp);
+
+							}
+							// #shift to next periode
+							// #lv_endtime_per+1 because SQL BETWEEN function
+							// includes the limits to (closed set)
+
+							lv_starttime_per = new Timestamp(
+									lv_endtime_per.getTime() + 1);
+							lv_endtime_per = new Timestamp(
+									lv_endtime_per.getTime()
+											+ Math.round(p_period));
+						}
+						break;
+
+					case 3:
+						// #---------------------------------------------------------------------------------------------
+						// #----------------------- mode = 3 (difference value /
+						// zero)-----------------------------------
+						// #---------------------------------------------------------------------------------------------
+
+						// #mode 3:
+						// #algorithm for difference value and zero
+
+						while ((end.getTime() - lv_endtime_per.getTime()) >= 0) {
+
+							// #get quality (number of measurements) for current
+							// period
+							params.clear();
+							params.put("node_id", datapoint.getId());
+							params.put("lv_starttime_per",
+									lv_starttime_per.toString());
+							params.put("lv_endtime_per",
+									lv_endtime_per.toString());
+							params.put("datapoint_name", p_datapoint_name);
+							cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN COUNT(data) AS count;";
+							result = execute_eng.execute(cypherquerry, params);
+							Iterator<Long> iterator = result.columnAs("count");
+							lv_quality = new Double(iterator.next());
+							// #check if there are values in current periode
+
+							// #lv_starttime_per+1 done at the end of the loop.
+							// Needed because SQL BETWEEN function includes the
+							// limits to (closed set)
+							// #TODO: check if DISTINCT has an effect or LIMIT 1
+							// needed/better!
+
+							cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={lv_starttime_per} AND data.timestamp<={lv_endtime_per} AND data.datapoint_name={datapoint_name} RETURN DISTINCT data.datapoint_name AS datapoint_name;";
+							result = execute_eng.execute(cypherquerry, params);
+							Iterator<String> iterator2 = result
+									.columnAs("datapoint_name");
+							if (iterator2.hasNext()) {
+
+								// #calculate difference value of last (highest)
+								// value with last valid value (last value
+								// before this period)
+								params.clear();
+								params.put("node_id", datapoint.getId());
+								params.put("lv_endtime_per",
+										lv_endtime_per.toString());
+								params.put("datapoint_name", p_datapoint_name);
+								cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp<=lv_endtime_per AND data.datapoint_name={datapoint_name} RETURN data ORDER BY data.timestamp DESC LIMIT 1;";
+								result = execute_eng.execute(cypherquerry,
+										params);
+								Iterator<Node> iterator3 = result
+										.columnAs("data");
+								lv_currentValueMax = Double
+										.parseDouble(iterator3.next()
+												.getProperty("value")
+												.toString());
+
+								lv_currentValue = lv_currentValueMax
+										- lv_lastValidValue;
+
+								// #TODO: check if lv_currentValue is negative
+								// (could happen if counter overflow)
+								// #assigning of current value (calculated
+								// result of last period) to the endtime of the
+								// period
+								temp = new data_periodic(lv_currentValue,
+										lv_endtime_per.toString(),
+										p_datapoint_name, lv_quality);
+								temp_data_periodic.add(temp);
+								lv_lastValidValue = lv_currentValueMax;
+
+							} else {
+
+								// #assigning of value (zero) to the endtime of
+								// the current period
+								temp = new data_periodic(0.0,
+										lv_endtime_per.toString(),
+										p_datapoint_name, lv_quality);
+
+							}
+							// #shift to next periode
+							// #lv_endtime_per+1 because SQL BETWEEN function
+							// includes the limits to (closed set)
+
+							lv_starttime_per = new Timestamp(
+									lv_endtime_per.getTime() + 1);
+							lv_endtime_per = new Timestamp(
+									lv_endtime_per.getTime()
+											+ Math.round(p_period));
+
+						}
+
+						break;
+
+					default:
+						System.out
+								.println("Wanted mode not supported by this stored procedure! Allowed modes: 1,2,3 (and corresponding modes above 1000)");
+						break;
+
+					}
+
+				}
+
+				if (lv_outputEnabled) {
+
+					return temp_data_periodic;
+
+				} else {
+					return null;
+
+				}
+
+			}
+		}
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public void interpolateValuesLinear(String p_datapoint_name,
+			String p_starttime, String p_endtime, Double p_period,
+			Double p_value_starttime, Double p_value_endtime,
+			ArrayList<data_periodic> existing_data_periodic) {
+
+		Timestamp start;
+		Timestamp end;
+
+		Timestamp lv_starttime_per;
+		Timestamp lv_endtime_per;
+		Double lv_value;
+		Double lv_k;
+		Double lv_x;
+		Double lv_d;
+		Double lv_delta_x;
+		Double lv_quality;
+		String cypherquerry = "";
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		Node datapoint;
+		data_periodic temp;
+		ArrayList<data_periodic> temp_data_periodic = existing_data_periodic;
+
+		try {
+
+			start = Timestamp.valueOf(p_starttime);
+			end = Timestamp.valueOf(p_endtime);
+		} catch (Exception e) {
+			System.out.println("Invalid Datetime format");
+			return;
+		}
+
+		try {
+			datapoint = this.getDatapointByName(p_datapoint_name);
+			lv_starttime_per = start;
+			lv_endtime_per = new Timestamp(lv_starttime_per.getTime()
+					+ Math.round(p_period));
+			// -- y = k*x + d
+
+			lv_delta_x = (end.getTime() - start.getTime()) / 1000.0;
+			lv_k = (p_value_endtime - p_value_starttime) / lv_delta_x;
+			lv_x = p_period;
+			lv_d = p_value_starttime;
+			// #quality depands on length of interpolation (long interpolation
+			// -> lower quality)
+			lv_quality = (p_period / lv_delta_x);
+
+			while ((end.getTime() - lv_endtime_per.getTime()) >= 0) {
+				// #do calculations while endtime for next periode sooner than
+				// final endtime
+				// -- y = k*x + d
+				lv_value = lv_k * lv_x + lv_d;
+
+				temp = new data_periodic(lv_value, lv_endtime_per.toString(),
+						p_datapoint_name, lv_quality);
+				temp_data_periodic.add(temp);
+				lv_endtime_per = new Timestamp(lv_endtime_per.getTime()
+						+ Math.round(p_period));
+				lv_x = lv_x + p_period;
+
+			}
+			params.put("node_id", datapoint.getId());
+			params.put("datapoint_name", p_datapoint_name);
+			params.put("p_endtime", p_endtime);
+			params.put("starttime_1",
+					new Timestamp(start.getTime() + 1).toString());
+			cypherquerry = "start n=Node({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={starttime_1} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN COUNT(data) AS count;";
+			result = execute_eng.execute(cypherquerry, params);
+			Iterator<Long> iterator = result.columnAs("count");
+			lv_quality = new Double(iterator.next());
+
+		} catch (Exception e) {
+			System.out
+					.println("Error Occured in the Interpolate values linear method...");
+			e.printStackTrace();
+			return;
+		}
+
+	}
+
+	public Double[] calcAverageWeighted(String p_datapoint_name,
+			String p_starttime, String p_endtime, Double p_startvalue) {
+
+		// VARIABLES
+
+		Integer lv_index;
+		Integer lv_indexMax;
+		Integer lv_timedurationSum;
+		Timestamp lv_timestamp_1;
+		Timestamp lv_timestamo_2;
+
+		Timestamp start;
+		Timestamp end;
+
+		String cypherquerry = "";
+		Map<String, Object> params = new HashMap<String, Object>();
+		Node datapoint;
+
+		// TO BE RETURNED...
+
+		// Return Values
+		Double p_currentValue; // output[0];
+		Double p_lastValidValue; // output[1];
+		Integer p_quality; // output[2];
+
+		Double[] output = new Double[3];
+
+		datapoint = this.getDatapointByName(p_datapoint_name);
+		if (datapoint == null) {
+			System.out.println("Datapoint not found inthe database..!");
+			return null;
+		}
+
+		try {
+			start = Timestamp.valueOf(p_starttime);
+			end = Timestamp.valueOf(p_endtime);
+
+		} catch (Exception e) {
+			System.out.println("Invalid Timestamp format...!");
+			return null;
+		}
+
+		lv_index = 0;
+		data_calcAverageWeighted temp;
+		ArrayList<data_calcAverageWeighted> temp_data_calcAverageWeighted = new ArrayList<data_calcAverageWeighted>();
+
+		try {
+
+			// #insert startdata (given from calling function) in (temporary)
+			// table data_calcAverageWeighted
+			temp = new data_calcAverageWeighted(p_startvalue, p_starttime, null);
+			temp_data_calcAverageWeighted.add(temp);
+
+			// #copy data that shall be weighted into seperate (temporary) table
+			// data_calcAverageWeighted
+			params.put("node_id", datapoint.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("p_datapoint_name", p_datapoint_name);
+			cypherquerry = "START n=NODE({node_id}) MATCH n-[:HasData]->data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={p_datapoint_name} RETURN data;";
+			result = execute_eng.execute(cypherquerry, params);
+			Iterator<Node> iterator = result.columnAs("data");
+			Node data_temp;
+			while (iterator.hasNext()) {
+
+				data_temp = iterator.next();
+				temp = new data_calcAverageWeighted(
+						Double.parseDouble(data_temp.getProperty("value")
+								.toString()), data_temp
+								.getProperty("timestamp").toString(), null);
+				temp_data_calcAverageWeighted.add(temp);
+			}
+
+			// #insert last data into table data_calcAverageWeighted. Only
+			// timestamp needed because of calculation of the duration of the
+			// last value
+			temp = new data_calcAverageWeighted(0.0, p_endtime, 0);
+			temp_data_calcAverageWeighted.add(temp);
+
+			// get size of the array list
+			lv_indexMax = temp_data_calcAverageWeighted.size();
+
+			while (lv_index + 1 < lv_indexMax) {
+
+				lv_timestamp_1 = Timestamp
+						.valueOf(temp_data_calcAverageWeighted.get(lv_index)
+								.getTimestamp());
+				lv_timestamo_2 = Timestamp
+						.valueOf(temp_data_calcAverageWeighted
+								.get(lv_index + 1).getTimestamp());
+				temp_data_calcAverageWeighted.get(lv_index).setTimeDuration(
+						(int) ((lv_timestamp_1.getTime() - lv_timestamo_2
+								.getTime()) / 1000));
+				lv_index = lv_index + 1;
+			}
+
+			if (p_startvalue == null) {
+				temp_data_calcAverageWeighted.get(0).setTimeDuration(0);
+				temp_data_calcAverageWeighted.get(0).setValue(0.0);
+			}
+
+			// #calculate weighted average value
+			lv_timedurationSum = 0;
+			for (int i = 0; i < lv_indexMax; i++) {
+				if (temp_data_calcAverageWeighted.get(i).getTimeDuration() != null) {
+					lv_timedurationSum = lv_timedurationSum
+							+ temp_data_calcAverageWeighted.get(i)
+									.getTimeDuration();
+				}
+			}
+
+			if (lv_timedurationSum == 0) {
+				// #TODO: could cause problems if no values are in current
+				// period (lv_indexMax-1 then 0!?), test if this can happen!
+				p_currentValue = temp_data_calcAverageWeighted.get(
+						lv_indexMax - 2).getValue();
+
+			} else {
+				p_currentValue = 0.0;
+				for (int i = 0; i < temp_data_calcAverageWeighted.size(); i++) {
+
+					if (temp_data_calcAverageWeighted.get(i).getTimeDuration() != null) {
+						p_currentValue = p_currentValue
+								+ (temp_data_calcAverageWeighted.get(i)
+										.getValue() * temp_data_calcAverageWeighted
+										.get(i).getTimeDuration());
+					}
+
+				}
+			}
+
+			// #TODO: could cause problems if no values are in current period
+			// (lv_indexMax-1 then 0!?), test if this can happen!
+			p_lastValidValue = temp_data_calcAverageWeighted.get(
+					lv_indexMax - 2).getValue();
+
+			// #set quality, not full correct if more than one dataset for the
+			// same timestamp of an datapoint (but this should not be too often)
+			p_quality = lv_index - 1;
+			output[0] = p_currentValue;
+			output[1] = p_lastValidValue;
+			output[2] = new Double(p_quality);
+
+			return output;
+
+		} catch (Exception e) {
+			System.out
+					.println("Error Occured in the calcAverageWeighted Procedure");
+			return null;
+		}
+
+	}
+
 }
 
-// TEMP TABLE FOR data_periodic.
+// TEMP TABLE FOR data_periodic. USED in getvaluePeriodicBinary Functions
 class data_periodic {
 	Double value;
 	String timestamp;
-	String datapoint_name;
 	Double quality;
+	String datapoint_name;
 
 	public data_periodic(Double value, String timestamp, String datapoint_name,
 			Double quality) {
 		this.value = value;
 		this.timestamp = timestamp;
-		this.datapoint_name = datapoint_name;
 		this.quality = quality;
+		this.datapoint_name = datapoint_name;
 	}
 
 }// This will be treated as the Temp table
 //
 
+class data_calcAverageWeighted {
+
+	Double value;
+	String timestamp;
+	Integer timeduration;
+
+	public data_calcAverageWeighted(Double value, String timestamp,
+			Integer timeduration) {
+		this.value = value;
+		this.timestamp = timestamp;
+		this.timeduration = timeduration;
+
+	}
+
+	public String getTimestamp() {
+		return this.timestamp;
+	}
+
+	public Integer getTimeDuration() {
+		return this.timeduration;
+	}
+
+	public Double getValue() {
+		return this.value;
+	}
+
+	public void setTimeDuration(Integer timeduration) {
+		this.timeduration = timeduration;
+	}
+
+	public void setValue(Double value) {
+		this.value = value;
+	}
+
+}

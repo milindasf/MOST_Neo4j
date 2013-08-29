@@ -167,6 +167,25 @@ public class Neo4jDatabaseProcedureTest {
 		assertEquals(2, data.length);
 		
 	}
+	
+	
+	
+	@Test
+	public void testcalcAverageWeighted(){
+
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		Double [] result=db.calcAverageWeighted("datapoint_1", "2013-07-23 12:12:12.23", "2013-07-23 12:15:23.23",0.0);
+		if(result!=null){
+			System.out.println("result[0]:"+result[0]);
+			System.out.println("result[1]:"+result[1]);
+			System.out.println("result[2]:"+result[2]);
+		}else{
+			System.out.println("The result was null...");
+		}
+		
+	}
+	
 	@Test
 	public void testGetValuesPeriodicallyBinary(){
 		
@@ -236,6 +255,79 @@ public class Neo4jDatabaseProcedureTest {
 		assertEquals(null, temp);
 		
 		
+		
+		
+		
+	}
+	
+	
+	@Test
+	public void testInterpolate(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		
+		ArrayList<data_periodic> temp=new ArrayList<data_periodic>();
+		db.interpolateValuesLinear("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:53.23", 1000.0, 12.23,23.23, temp);
+		for(int i=0;i<temp.size();i++){
+			System.out.println(temp.get(i).toString());
+			
+		}
+		
+		
+	}
+	
+	@Test 
+	public void testGetValuesPeriodicAnalog(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_periodic> temp;
+		temp=db.getValuesPeriodicAnalog("datapoint_1", "2013-07-23 12:12:12.23","2013-07-23 12:15:45.23", 1000.0, 1);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+			
+		}
+		
+		
+		
+	}
+	
+	
+	private void addTestDatatoDataPoints(){
+// You have to call this function after adding the datapoints to the data base.		
+		boolean state;
+		//ADDING DATA FOR DATAPOINT_1
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:13:34.23", 23.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:14:34.23", 22.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:15:34.23", 21.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:16:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:17:34.23", 24.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_1", "2013-07-23 12:12:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		
+        // ADDING DATA FOR DATAPOINT_2
+
+		//ADDING DATA FOR DATAPOINT_1
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:13:34.23", 23.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:14:34.23", 22.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:15:34.23", 21.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:16:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:17:34.23", 24.09);
+		System.out.println("Data(Forced) added"+state);
+		state=db.addDataForced("datapoint_2", "2013-07-23 12:12:34.23", 20.09);
+		System.out.println("Data(Forced) added"+state);
+
 		
 		
 		
