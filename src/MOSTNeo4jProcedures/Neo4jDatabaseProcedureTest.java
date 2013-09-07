@@ -164,7 +164,7 @@ public class Neo4jDatabaseProcedureTest {
 		
 		this.testAddDataForced();
 		Node [] data=db.getValues("datapoint_1", "2013-06-23 12:23:34.43", "2013-08-23 12:23:34.34");
-		assertEquals(2, data.length);
+		assertEquals(1, data.length);
 		
 	}
 	
@@ -315,6 +315,70 @@ public class Neo4jDatabaseProcedureTest {
 		
 		
 		
+	}
+	
+	@Test
+	public void testGetvaluesWhereDpBetween(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_tmp> temp=db.getValuesWhereDpBetween("datapoint_1", "2013-07-23 12:12:12.23", "2013-07-23 12:15:56.45", "datapoint_2", 15.56, 24.32);
+		for(int i=0;i<temp.size();i++){
+			System.out.println(temp.get(i).toString());
+		}
+		
+	}
+	
+	@Test
+	public void testGetValuesWhereDpBigger(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_tmp> temp=db.getValuesWhereDpBigger("datapoint_1", "2013-07-23 12:12:12.12", "2013-07-23 12:15:56.45", "datapoint_2", 20.0);
+		for(int i=0;i<temp.size();i++){
+			System.out.println(temp.get(i).toString());
+		}
+		
+		
+	}
+	
+	@Test
+	public void testGetValuesWhereDpEqual(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_tmp> temp=db.getValuesWhereDpEqual("datapoint_1", "2013-07-23 12:12:12.12", "2013-07-23 12:15:56.45", "datapoint_2", 19.34);
+		for(int i=0;i<temp.size();i++){
+			System.out.println(temp.get(i).toString());
+		}
+		
+		
+		
+	}
+	
+	@Test
+	public void testGetValuesWhereDpLower(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		ArrayList<data_tmp> temp;
+		temp=db.getValuesWhereDpLower("datapoint_1", "2013-07-23 12:12:12.12", "2013-07-23 12:15:56.45","datapoint_2", 20.45);
+		for(int i=0;i<temp.size();i++){
+			
+			System.out.println(temp.get(i).toString());
+		}
+		
+	}
+	@Test
+	public void testEmptyDatapoint(){
+		
+		this.testAddDatapoint();
+		this.addTestDatatoDataPoints();
+		db.emptyDatapoint("datapoint_");
+		int x=db.getNumberofValues("datapoint_1", "2013-07-19 12:12:12", "2013-07-31 12:12:12.34");
+		assertEquals(0, x);
+		x=db.getNumberofValues("datapoint_2", "2013-07-19 12:12:12", "2013-07-31 12:12:12.34");
+		assertEquals(0, x);
 	}
 	
 	

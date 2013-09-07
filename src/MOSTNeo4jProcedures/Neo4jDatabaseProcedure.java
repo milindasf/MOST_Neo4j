@@ -11,6 +11,9 @@ import java.io.File;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1764,7 +1767,7 @@ public class Neo4jDatabaseProcedure {
 		Integer lv_indexMax;
 		Integer lv_timedurationSum;
 		Timestamp lv_timestamp_1;
-		Timestamp lv_timestamo_2;
+		Timestamp lv_timestamp_2;
 
 		Timestamp start;
 		Timestamp end;
@@ -1842,11 +1845,11 @@ public class Neo4jDatabaseProcedure {
 				lv_timestamp_1 = Timestamp
 						.valueOf(temp_data_calcAverageWeighted.get(lv_index)
 								.getTimestamp());
-				lv_timestamo_2 = Timestamp
+				lv_timestamp_2 = Timestamp
 						.valueOf(temp_data_calcAverageWeighted
 								.get(lv_index + 1).getTimestamp());
 				temp_data_calcAverageWeighted.get(lv_index).setTimeDuration(
-						(int) ((lv_timestamp_1.getTime() - lv_timestamo_2
+						(int) ((lv_timestamp_1.getTime() - lv_timestamp_2
 								.getTime()) / 1000));
 				lv_index = lv_index + 1;
 			}
@@ -1966,16 +1969,803 @@ public class Neo4jDatabaseProcedure {
 	}
 	
 	
+	public ArrayList<data_tmp> getValuesWhereDpBetween(String p_dp1,String p_starttime,String p_endtime,String p_dp2,Double p_valueLow,Double p_valueHigh){
+		
+		
+		Integer lv_index;
+		Integer lv_indexMax;
+		Integer lv_tmp;
+		Boolean lv_valid;
+		Timestamp lv_timestampLastValid;
+		Timestamp lv_timestampCurrentRow;
+		Integer lv_timestampDiff;
+
+		Timestamp start;
+		Timestamp end;
+		Node datapoint_1;
+		Node datapoint_2;
+		try {
+			start = Timestamp.valueOf(p_starttime);
+			end = Timestamp.valueOf(p_endtime);
+
+		} catch (Exception e) {
+			System.out.println("Invalid Timestamp format...!");
+			return null;
+		}
+	
+		
+		String cypherquerry = "";
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		try{
+		
+		lv_index=0;
+		lv_valid=false;
+		lv_tmp=0;
+		
+		datapoint_1=this.getDatapointByName(p_dp1);
+		datapoint_2=this.getDatapointByName(p_dp2);
+		
+		data_tmp temp;
+		ArrayList<data_tmp>temp_data_tmp=new ArrayList<data_tmp>();
+		ArrayList<data_tmp>temp_data_tmp_sorted;
+		
+		params.clear();
+		params.put("node_id",datapoint_1.getId());
+		params.put("p_starttime", p_starttime);
+		params.put("p_endtime", p_endtime);
+		params.put("datapoint_name",p_dp1 );
+		cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+		result=execute_eng.execute(cypherquerry, params);
+		Iterator<Node> iterator=result.columnAs("data");
+		Node data;
+		while(iterator.hasNext()){
+		    data=iterator.next();
+			temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+			temp_data_tmp.add(temp);
+			
+		}
+		 
+		params.clear();
+		params.put("node_id",datapoint_2.getId());
+		params.put("p_starttime", p_starttime);
+		params.put("p_endtime", p_endtime);
+		params.put("datapoint_name",p_dp2 );
+		cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+		result=execute_eng.execute(cypherquerry, params);
+		iterator=result.columnAs("data");
+		
+		while(iterator.hasNext()){
+		    data=iterator.next();
+			temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+			temp_data_tmp.add(temp);
+			
+		}
+		
+		temp_data_tmp_sorted=new ArrayList<data_tmp>();
+		for(int i=0;i<temp_data_tmp.size();i++){
+			temp=temp_data_tmp.get(i);
+			temp_data_tmp_sorted.add(temp);
+		}
+		
+		Collections.sort(temp_data_tmp_sorted);
+	
+		for(int i=0;i<temp_data_tmp_sorted.size();i++){
+			temp=temp_data_tmp_sorted.get(i);
+			if(temp.datapoint_name.equals(p_dp2) && temp.value>=p_valueLow && temp.value<=p_valueHigh){
+				
+				temp.valid=true;
+			}
+			
+			
+		}
+	  
+	
+		for(int i=0;i<temp_data_tmp_sorted.size();i++){
+			temp=temp_data_tmp_sorted.get(i);
+	
+			if(temp.valid==null && temp.datapoint_name.equals(p_dp2)){
+				temp.valid=false;
+			}
+			
+		}
+	
+		
+		lv_timestampLastValid=Timestamp.valueOf(p_starttime);
+		lv_indexMax=temp_data_tmp_sorted.size();
+		
+		while(lv_index<lv_indexMax){
+			
+			if(lv_valid==false){
+				temp=temp_data_tmp_sorted.get(lv_index);
+				if(temp.valid!=null &&temp.valid==true){
+					lv_valid=true;
+					lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+					
+				}
+			}else{
+				
+				temp=temp_data_tmp_sorted.get(lv_index);
+				if(temp.valid!=null && temp.valid==false){
+					lv_valid=false;
+					
+				}else if(temp.valid==null){
+					temp.valid=true;
+					lv_timestampCurrentRow=Timestamp.valueOf(temp.timestamp);
+					lv_timestampDiff=(int) ((lv_timestampLastValid.getTime()-lv_timestampCurrentRow.getTime())/1000);
+					if(lv_timestampDiff==0){
+						lv_timestampDiff=1;
+					}
+					temp.quality=1000.0/lv_timestampDiff;
+					
+				}else if(temp.valid!=null && temp.valid==true){
+					
+					lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+					
+				}
+				
+			}
+		
+			
+			lv_index=lv_index+1;
+		}
+		
+		ArrayList<data_tmp> Output=new ArrayList<data_tmp>();
+		for(int i=0;i<temp_data_tmp_sorted.size();i++){
+			
+			temp=temp_data_tmp_sorted.get(i);
+			if(temp.datapoint_name.equals(p_dp1) && temp.valid!=null && temp.valid==true){
+				Output.add(temp);
+			}
+			
+		}
+		
+		return Output;
+		
+		}catch(Exception e){
+			System.out.println("Error Occured in the getValuesWhereDpBetween...");
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	public ArrayList<data_tmp> getValuesWhereDpLower(String p_dp1,String p_starttime,String p_endtime,String p_dp2,Double p_value){
+		
+		
+		Integer lv_index;
+		Integer lv_indexMax;
+		Integer lv_tmp;
+		Boolean lv_valid;
+		Timestamp lv_timestampLastValid;
+		Timestamp lv_timestampCurrentRow;
+		Integer lv_timestampDiff;
+		
+		
+		Timestamp start;
+		Timestamp end;
+		Node datapoint_1;
+		Node datapoint_2;
+		
+		try{
+			start=Timestamp.valueOf(p_starttime);
+			end=Timestamp.valueOf(p_endtime);
+			
+		}catch(Exception e){
+			System.out.println("Invalid datetime formats...");
+		    return null;
+		}
+		
+		
+		try{
+			
+			String cypherquerry = "";
+			Map<String, Object> params = new HashMap<String, Object>();
+
+			datapoint_1=this.getDatapointByName(p_dp1);
+			datapoint_2=this.getDatapointByName(p_dp2);
+			
+			lv_index=0;
+			lv_valid=false;
+			lv_tmp=0;
+			
+			data_tmp temp;
+			ArrayList<data_tmp> temp_data_tmp=new ArrayList<data_tmp>();
+			ArrayList<data_tmp> temp_data_tmp_sorted;
+			
+			params.clear();
+			params.put("node_id",datapoint_1.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp1 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			Iterator<Node> iterator=result.columnAs("data");
+			Node data;
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			 
+			params.clear();
+			params.put("node_id",datapoint_2.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp2 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			iterator=result.columnAs("data");
+			
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			
+			temp_data_tmp_sorted=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp.size();i++){
+				temp=temp_data_tmp.get(i);
+				temp_data_tmp_sorted.add(temp);
+			}
+			
+			Collections.sort(temp_data_tmp_sorted);
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp2) && temp.value<p_value){
+					
+					temp.valid=true;
+				}
+				
+				
+			}
+		  
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+		
+				if(temp.valid==null && temp.datapoint_name.equals(p_dp2)){
+					temp.valid=false;
+				}
+				
+			}
+		
+			lv_timestampLastValid=Timestamp.valueOf(p_starttime);
+			lv_indexMax=temp_data_tmp_sorted.size();
+			
+			while(lv_index<lv_indexMax){
+				
+				if(lv_valid==false){
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=true;
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}else{
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=false;
+					}else if(temp.valid==null){
+						
+						temp.valid=true;
+						lv_timestampCurrentRow=Timestamp.valueOf(temp.timestamp);
+						lv_timestampDiff=(int) ((lv_timestampLastValid.getTime()-lv_timestampCurrentRow.getTime())/1000);
+					
+						if(lv_timestampDiff==0){
+							
+							lv_timestampDiff=1;
+						}
+						
+						temp.quality=1000.0/lv_timestampDiff;
+					}else if(temp.valid!=null && temp.valid==true){
+						temp=temp_data_tmp_sorted.get(lv_index);
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}
+				lv_index=lv_index+1;
+				
+			}
+			
+			
+			ArrayList<data_tmp> Output=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp1) && temp.valid!=null && temp.valid==true){
+					Output.add(temp);
+					
+				}
+				
+			}
+			
+			
+			return Output;
+			
+			
+		}catch(Exception e){
+			
+			System.out.println("Error Occured while Executing the getValuesWhereDpLower Procedure...");
+			return null;
+		}
+		
+		
+		
+		
+		
+	}
+	
+	
+	public ArrayList<data_tmp> getValuesWhereDpBigger(String p_dp1,String p_starttime,String p_endtime,String p_dp2,Double p_value){
+		
+		
+		Integer lv_index;
+		Integer lv_indexMax;
+		Integer lv_tmp;
+		Boolean lv_valid;
+		Timestamp lv_timestampLastValid;
+		Timestamp lv_timestampCurrentRow;
+		Integer lv_timestampDiff;
+		
+		
+		Timestamp start;
+		Timestamp end;
+		Node datapoint_1;
+		Node datapoint_2;
+		
+		try{
+			start=Timestamp.valueOf(p_starttime);
+			end=Timestamp.valueOf(p_endtime);
+			
+		}catch(Exception e){
+			System.out.println("Invalid datetime formats...");
+		    return null;
+		}
+		
+		
+		try{
+			
+			String cypherquerry = "";
+			Map<String, Object> params = new HashMap<String, Object>();
+
+			datapoint_1=this.getDatapointByName(p_dp1);
+			datapoint_2=this.getDatapointByName(p_dp2);
+			
+			lv_index=0;
+			lv_valid=false;
+			lv_tmp=0;
+			
+			data_tmp temp;
+			ArrayList<data_tmp> temp_data_tmp=new ArrayList<data_tmp>();
+			ArrayList<data_tmp> temp_data_tmp_sorted;
+			
+			params.clear();
+			params.put("node_id",datapoint_1.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp1 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			Iterator<Node> iterator=result.columnAs("data");
+			Node data;
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			 
+			params.clear();
+			params.put("node_id",datapoint_2.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp2 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			iterator=result.columnAs("data");
+			
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			
+			temp_data_tmp_sorted=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp.size();i++){
+				temp=temp_data_tmp.get(i);
+				temp_data_tmp_sorted.add(temp);
+			}
+			
+			Collections.sort(temp_data_tmp_sorted);
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp2) && temp.value>p_value){
+					
+					temp.valid=true;
+				}
+				
+				
+			}
+		  
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+		
+				if(temp.valid==null && temp.datapoint_name.equals(p_dp2)){
+					temp.valid=false;
+				}
+				
+			}
+		
+			lv_timestampLastValid=Timestamp.valueOf(p_starttime);
+			lv_indexMax=temp_data_tmp_sorted.size();
+			
+			while(lv_index<lv_indexMax){
+				
+				if(lv_valid==false){
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=true;
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}else{
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=false;
+					}else if(temp.valid==null){
+						
+						temp.valid=true;
+						lv_timestampCurrentRow=Timestamp.valueOf(temp.timestamp);
+						lv_timestampDiff=(int) ((lv_timestampLastValid.getTime()-lv_timestampCurrentRow.getTime())/1000);
+					
+						if(lv_timestampDiff==0){
+							
+							lv_timestampDiff=1;
+						}
+						
+						temp.quality=1000.0/lv_timestampDiff;
+					}else if(temp.valid!=null && temp.valid==true){
+						temp=temp_data_tmp_sorted.get(lv_index);
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}
+				lv_index=lv_index+1;
+				
+			}
+			
+			
+			ArrayList<data_tmp> Output=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp1) && temp.valid!=null && temp.valid==true){
+					Output.add(temp);
+					
+				}
+				
+			}
+			
+			
+			return Output;
+			
+			
+		}catch(Exception e){
+			
+			System.out.println("Error Occured while Executing the getValuesWhereDpLower Procedure...");
+			return null;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	public void emptyDatapoint(String p_datapoint_name){
+		
+		String cypherquerry = "";
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put("datapoint_name", p_datapoint_name+".*");
+		cypherquerry="START n=NODE(1) MATCH n-[:HasDatapoint]->datapoint WHERE datapoint.datapoint_name=~{datapoint_name} RETURN datapoint; ";
+		
+		Node datapoint;
+		Relationship temp_rel;
+		Node data;
+		result=execute_eng.execute(cypherquerry, params);
+		Iterator<Node> iterator=result.columnAs("datapoint");
+ 		Iterator<Relationship> rel_iterator;
+		
+ 		
+ 		try{
+ 		
+ 		while(iterator.hasNext()){
+			
+			datapoint=iterator.next();
+			rel_iterator=datapoint.getRelationships(RelTypes.HasData).iterator();
+			while(rel_iterator.hasNext()){
+					temp_rel=rel_iterator.next();
+					data=temp_rel.getEndNode();
+					Transaction tx=this.graphDb.beginTx();
+					try{
+					temp_rel.delete();
+					data.delete();
+					
+			        tx.success();
+					}catch(Exception w){
+						tx.failure();
+					}finally{
+						tx.finish();
+					}
+					
+
+			}
+			
+			
+		 }
+ 		
+  		}catch(Exception e){
+ 			System.out.println("Error Occured while deleting data nodes");
+ 			
+ 		}
+	}
 	
 	
 	
 	
+	
+	public ArrayList<data_tmp> getValuesWhereDpEqual (String p_dp1,String p_starttime,String p_endtime,String p_dp2,Double p_value){
+		
+
+		Integer lv_index;
+		Integer lv_indexMax;
+		Integer lv_tmp;
+		Boolean lv_valid;
+		Timestamp lv_timestampLastValid;
+		Timestamp lv_timestampCurrentRow;
+		Integer lv_timestampDiff;
+		
+		
+		Timestamp start;
+		Timestamp end;
+		Node datapoint_1;
+		Node datapoint_2;
+		
+		try{
+			start=Timestamp.valueOf(p_starttime);
+			end=Timestamp.valueOf(p_endtime);
+			
+		}catch(Exception e){
+			System.out.println("Invalid datetime formats...");
+		    return null;
+		}
+		
+		
+		try{
+			
+			String cypherquerry = "";
+			Map<String, Object> params = new HashMap<String, Object>();
+
+			datapoint_1=this.getDatapointByName(p_dp1);
+			datapoint_2=this.getDatapointByName(p_dp2);
+			
+			lv_index=0;
+			lv_valid=false;
+			lv_tmp=0;
+			
+			data_tmp temp;
+			ArrayList<data_tmp> temp_data_tmp=new ArrayList<data_tmp>();
+			ArrayList<data_tmp> temp_data_tmp_sorted;
+			
+			params.clear();
+			params.put("node_id",datapoint_1.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp1 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			Iterator<Node> iterator=result.columnAs("data");
+			Node data;
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			 
+			params.clear();
+			params.put("node_id",datapoint_2.getId());
+			params.put("p_starttime", p_starttime);
+			params.put("p_endtime", p_endtime);
+			params.put("datapoint_name",p_dp2 );
+			cypherquerry="START n=NODE({node_id}) MATCH n-[:HasData]-data WHERE data.timestamp>={p_starttime} AND data.timestamp<={p_endtime} AND data.datapoint_name={datapoint_name} RETURN data;";
+			result=execute_eng.execute(cypherquerry, params);
+			iterator=result.columnAs("data");
+			
+			while(iterator.hasNext()){
+			    data=iterator.next();
+				temp=new data_tmp(Double.parseDouble(data.getProperty("value").toString()),data.getProperty("timestamp").toString(),null,data.getProperty("datapoint_name").toString(), null);
+				temp_data_tmp.add(temp);
+				
+			}
+			
+			temp_data_tmp_sorted=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp.size();i++){
+				temp=temp_data_tmp.get(i);
+				temp_data_tmp_sorted.add(temp);
+			}
+			
+			Collections.sort(temp_data_tmp_sorted);
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp2) && temp.value==p_value){
+					
+					temp.valid=true;
+				}
+				
+				
+			}
+		  
+		
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				temp=temp_data_tmp_sorted.get(i);
+		
+				if(temp.valid==null && temp.datapoint_name.equals(p_dp2)){
+					temp.valid=false;
+				}
+				
+			}
+		
+			lv_timestampLastValid=Timestamp.valueOf(p_starttime);
+			lv_indexMax=temp_data_tmp_sorted.size();
+			
+			while(lv_index<lv_indexMax){
+				
+				if(lv_valid==false){
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=true;
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}else{
+					
+					temp=temp_data_tmp_sorted.get(lv_index);
+					if(temp.valid!=null && temp.valid==true){
+						
+						lv_valid=false;
+					}else if(temp.valid==null){
+						
+						temp.valid=true;
+						lv_timestampCurrentRow=Timestamp.valueOf(temp.timestamp);
+						lv_timestampDiff=(int) ((lv_timestampLastValid.getTime()-lv_timestampCurrentRow.getTime())/1000);
+					
+						if(lv_timestampDiff==0){
+							
+							lv_timestampDiff=1;
+						}
+						
+						temp.quality=1000.0/lv_timestampDiff;
+					}else if(temp.valid!=null && temp.valid==true){
+						temp=temp_data_tmp_sorted.get(lv_index);
+						lv_timestampLastValid=Timestamp.valueOf(temp.timestamp);
+						
+					}
+					
+				}
+				lv_index=lv_index+1;
+				
+			}
+			
+			
+			ArrayList<data_tmp> Output=new ArrayList<data_tmp>();
+			for(int i=0;i<temp_data_tmp_sorted.size();i++){
+				
+				temp=temp_data_tmp_sorted.get(i);
+				if(temp.datapoint_name.equals(p_dp1) && temp.valid!=null && temp.valid==true){
+					Output.add(temp);
+					
+				}
+				
+			}
+			
+			
+			return Output;
+			
+			
+		}catch(Exception e){
+			
+			System.out.println("Error Occured while Executing the getValuesWhereDpLower Procedure...");
+			return null;
+		}
+		
+
+		
+		
+		
+		
+		
+	}
 	
 	
 	
 	
 	
 }
+
+class data_tmp implements Comparable<data_tmp>{
+	
+	Double value;
+	String timestamp;
+	Boolean valid;
+	String datapoint_name;
+	Double quality;
+	
+	
+	public data_tmp(Double vlaue,String timestamp,Boolean valid,String datapoint_name,Double quality){
+		
+		this.value=vlaue;
+		this.timestamp=timestamp;
+		this.valid=valid;
+		this.datapoint_name=datapoint_name;
+		this.quality=quality;
+	}
+	@Override
+	public int compareTo(data_tmp ts) {
+       
+		Timestamp time1=Timestamp.valueOf(this.timestamp);
+		Timestamp time2=Timestamp.valueOf(ts.timestamp);
+		
+		return time1.compareTo(time2);
+			
+		
+    }
+	
+	
+}
+
+
+
+
+
+
+
+
 
 // TEMP TABLE FOR data_periodic. USED in getvaluePeriodicBinary Functions
 class data_periodic {
